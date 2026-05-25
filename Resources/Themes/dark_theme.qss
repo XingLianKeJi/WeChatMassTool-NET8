@@ -1,0 +1,270 @@
+/* Dark Theme - Dracula Color Based */
+
+QWidget {
+    color: rgb(221, 221, 221);
+    font-family: "Microsoft YaHei UI";
+    font-size: 10pt;
+}
+
+QToolTip {
+    color: #ffffff;
+    background-color: rgba(33, 37, 43, 180);
+    border: 1px solid rgb(44, 49, 58);
+    background-image: none;
+    background-position: left center;
+    background-repeat: no-repeat;
+    border: none;
+    border-left: 2px solid rgb(255, 121, 198);
+    text-align: left;
+    padding-left: 8px;
+    margin: 0px;
+}
+
+QFrame#bgApp {
+    background-color: rgb(40, 44, 52);
+    border: 1px solid rgb(44, 49, 58);
+}
+
+QFrame#leftMenuBg {
+    background-color: rgb(33, 37, 43);
+}
+
+QLabel#titleLeftApp {
+    font: 63 12pt "Segoe UI Semibold";
+}
+
+QLabel#titleLeftDescription {
+    font: 8pt "Segoe UI";
+    color: rgb(189, 147, 249);
+}
+
+QPushButton {
+    background-position: left center;
+    background-repeat: no-repeat;
+    border: none;
+    background-color: transparent;
+    text-align: left;
+    padding-left: 44px;
+}
+
+QPushButton:hover {
+    background-color: rgb(40, 44, 52);
+}
+
+QPushButton:pressed {
+    background-color: rgb(189, 147, 249);
+    color: rgb(255, 255, 255);
+}
+
+QPushButton#toggleButton {
+    background-color: rgb(37, 41, 48);
+    color: rgb(113, 126, 149);
+}
+
+QLineEdit {
+    background-color: rgb(33, 37, 43);
+    border-radius: 5px;
+    border: 2px solid rgb(33, 37, 43);
+    padding-left: 10px;
+    selection-color: rgb(255, 255, 255);
+    selection-background-color: rgb(255, 121, 198);
+}
+
+QLineEdit:hover {
+    border: 2px solid rgb(64, 71, 88);
+}
+
+QLineEdit:focus {
+    border: 2px solid rgb(91, 101, 124);
+}
+
+QTextEdit {
+    background-color: rgb(27, 29, 35);
+    border-radius: 5px;
+    padding: 10px;
+    selection-color: rgb(255, 255, 255);
+    selection-background-color: rgb(255, 121, 198);
+}
+
+QTextEdit:hover {
+    border: 2px solid rgb(64, 71, 88);
+}
+
+QTextEdit:focus {
+    border: 2px solid rgb(91, 101, 124);
+}
+
+QScrollBar:horizontal {
+    border: none;
+    background: rgb(52, 59, 72);
+    height: 8px;
+    margin: 0px 21px 0 21px;
+    border-radius: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background: rgb(189, 147, 249);
+    min-width: 25px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:horizontal {
+    border: none;
+    background: rgb(55, 63, 77);
+    width: 20px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: none;
+    background: rgb(55, 63, 77);
+    width: 20px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:vertical {
+    border: none;
+    background: rgb(52, 59, 72);
+    width: 8px;
+    margin: 21px 0 21px 0;
+    border-radius: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: rgb(189, 147, 249);
+    min-height: 25px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:vertical {
+    border: none;
+    background: rgb(55, 63, 77);
+    height: 20px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: rgb(55, 63, 77);
+    height: 20px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QCheckBox::indicator {
+    border: 3px solid rgb(52, 59, 72);
+    width: 15px;
+    height: 15px;
+    border-radius: 10px;
+    background: rgb(44, 49, 60);
+}
+
+QCheckBox::indicator:hover {
+    border: 3px solid rgb(58, 66, 81);
+}
+
+QCheckBox::indicator:checked {
+    background: 3px solid rgb(52, 59, 72);
+    border: 3px solid rgb(52, 59, 72);
+}
+
+QRadioButton::indicator {
+    border: 3px solid rgb(52, 59, 72);
+    width: 15px;
+    height: 15px;
+    border-radius: 10px;
+    background: rgb(44, 49, 60);
+}
+
+QRadioButton::indicator:hover {
+    border: 3px solid rgb(58, 66, 81);
+}
+
+QRadioButton::indicator:checked {
+    background: 3px solid rgb(94, 106, 130);
+    border: 3px solid rgb(52, 59, 72);
+}
+
+QComboBox {
+    background-color: rgb(27, 29, 35);
+    border-radius: 5px;
+    border: 2px solid rgb(33, 37, 43);
+    padding: 5px;
+    padding-left: 10px;
+}
+
+QComboBox:hover {
+    border: 2px solid rgb(64, 71, 88);
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 25px;
+    border-left-width: 3px;
+    border-left-color: rgba(39, 44, 54, 150);
+    border-left-style: solid;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox QAbstractItemView {
+    color: rgb(255, 121, 198);
+    background-color: rgb(33, 37, 43);
+    padding: 10px;
+    selection-background-color: rgb(39, 44, 54);
+}
+
+QProgressBar {
+    border: 2px solid #333;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #21252B;
+}
+
+QProgressBar::chunk {
+    border-radius: 3px;
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 131, 208), stop:1 rgb(255, 111, 188));
+}
+
+QListWidget {
+    background-color: rgb(27, 29, 35);
+    border-radius: 5px;
+    padding: 3px;
+    border: 1px solid rgb(45, 45, 58);
+    font: 12pt "Microsoft YaHei UI";
+    color: #f8f8f2;
+}
+
+QListWidget::item {
+    padding: 3px;
+}
+
+QMenu {
+    background-color: rgb(37, 39, 48);
+    color: rgb(220, 220, 220);
+    border: 1px solid rgb(45, 45, 58);
+    font: 12pt "Segoe UI";
+}
+
+QMenu::item {
+    background-color: transparent;
+    padding: 5px 10px;
+    margin: 1px 1px;
+}
+
+QMenu::item:selected {
+    background-color: rgb(40, 44, 52);
+    border-left: 2px solid rgb(255, 121, 198);
+}
