@@ -811,8 +811,8 @@ namespace WeChatMassTool.Views
             // rightPanel
             // 
             rightPanel.BackColor = Color.FromArgb(35, 38, 45);
-            rightPanel.Controls.Add(rightHeader);
             rightPanel.Controls.Add(taskFlowPanel);
+            rightPanel.Controls.Add(rightHeader);
             rightPanel.Dock = DockStyle.Right;
             rightPanel.Location = new Point(1450, 20);
             rightPanel.Name = "rightPanel";
@@ -859,10 +859,10 @@ namespace WeChatMassTool.Views
             taskFlowPanel.Controls.Add(emptyLabel);
             taskFlowPanel.Dock = DockStyle.Fill;
             taskFlowPanel.FlowDirection = FlowDirection.TopDown;
-            taskFlowPanel.Location = new Point(0, 0);
+            taskFlowPanel.Location = new Point(0, 50);
             taskFlowPanel.Name = "taskFlowPanel";
             taskFlowPanel.Padding = new Padding(12, 14, 12, 8);
-            taskFlowPanel.Size = new Size(480, 1039);
+            taskFlowPanel.Size = new Size(480, 989);
             taskFlowPanel.TabIndex = 1;
             taskFlowPanel.Visible = false;
             taskFlowPanel.WrapContents = false;
