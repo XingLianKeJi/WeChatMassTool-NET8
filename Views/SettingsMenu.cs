@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using WeChatMassTool.Config;
 using WeChatMassTool.Constants;
+using WeChatMassTool.Utils;
 
 namespace WeChatMassTool.Views;
 
@@ -48,8 +49,7 @@ public static class SettingsMenu
         };
         updateItem.Click += (s, e) =>
         {
-            MessageBox.Show("在线更新功能开发中，敬请期待", "检查更新",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            UpdateChecker.StartCheck();
         };
         menu.Items.Add(updateItem);
 

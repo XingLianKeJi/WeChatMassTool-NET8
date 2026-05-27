@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AutoUpdaterDotNET;
 using WeChatMassTool.Config;
 using WeChatMassTool.Controllers;
 using WeChatMassTool.Models;
@@ -151,17 +152,14 @@ public partial class MainForm : Form
 
         // 菜单栏事件
         menuStrip.Renderer = new DarkMenuRenderer();
+        SetupAutoUpdater();
         menuSettings.Click += (s, e) =>
         {
             MessageBox.Show("设置功能开发中，敬请期待", "设置",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         };
         menuAbout.Click += (s, e) => SettingsMenu.ShowAboutDialog(this);
-        menuUpdate.Click += (s, e) =>
-        {
-            MessageBox.Show("在线更新功能开发中，敬请期待", "检查更新",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        };
+        menuUpdate.Click += (s, e) => UpdateChecker.StartCheck();
 
         // 暗色滚动条
         UiHelper.EnableDarkScrollBar(fileListBox);
@@ -377,6 +375,69 @@ public partial class MainForm : Form
     {
         var toast = new ToastNotification(this, message, type);
         toast.Show();
+    }
+
+    /// <summary>
+    /// 配置 AutoUpdater 事件，使用自定义暗色 UI
+    /// </summary>
+    private void SetupAutoUpdater()
+    {
+        AutoUpdater.CheckForUpdateEvent += args =>
+        {
+            UpdateChecker.CloseLoading();
+
+            if (IsDisposed) return;
+
+            if (args.Error != null)
+            {
+                LogManager.Error("检查更新失败", args.Error);
+                BeginInvoke(new Action(() =>
+                {
+                    if (!IsDisposed)
+                        UpdateDialog.ShowError(this, $"检查更新失败：{args.Error.Message}");
+                }));
+                return;
+            }
+
+            if (!args.IsUpdateAvailable)
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    if (!IsDisposed)
+                        UpdateDialog.ShowNoUpdate(this);
+                }));
+                return;
+            }
+
+            var latestArgs = UpdateChecker.GetLatestArgs();
+            var info = new UpdateInfo
+            {
+                HasUpdate = true,
+                LatestVersion = args.CurrentVersion.ToString(),
+                ReleaseNotes = $"请访问 GitHub Release 页面查看详细更新说明",
+                ReleaseUrl = latestArgs?.ChangelogURL ?? "",
+                DownloadUrl = latestArgs?.DownloadURL ?? "",
+            };
+
+            BeginInvoke(new Action(() =>
+            {
+                if (IsDisposed) return;
+
+                UpdateDialog.ShowUpdateAvailable(this, info, onDownload: () =>
+                {
+                    try
+                    {
+                        if (AutoUpdater.DownloadUpdate(args))
+                            Application.Exit();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogManager.Error("下载更新失败", ex);
+                        UpdateDialog.ShowError(this, $"下载更新失败：{ex.Message}");
+                    }
+                });
+            }));
+        };
     }
 
     private void ExecuteSend()
