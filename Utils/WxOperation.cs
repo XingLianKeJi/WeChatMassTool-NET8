@@ -8,6 +8,11 @@ namespace WeChatMassTool.Utils;
 
 public class WxOperation
 {
+    private static readonly Lazy<WxOperation> _instance = new(() => new WxOperation());
+    public static WxOperation Instance => _instance.Value;
+
+    private WxOperation() { }
+
     [DllImport("user32.dll")]
     private static extern int SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 

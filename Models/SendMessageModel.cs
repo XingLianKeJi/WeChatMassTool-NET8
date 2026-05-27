@@ -9,6 +9,9 @@ namespace WeChatMassTool.Models;
 
 public class SendMessageModel
 {
+    private static readonly Lazy<SendMessageModel> _instance = new(() => new SendMessageModel());
+    public static SendMessageModel Instance => _instance.Value;
+
     public event Action<int, int>? ProgressUpdated;
     public event Action<ExecResult>? ExecInfoRecorded;
     public event Action<bool, string>? InfoBarShown;
@@ -23,10 +26,10 @@ public class SendMessageModel
     private readonly object _lockObj = new();
     private readonly Dictionary<string, bool> _taskStatusMap = new();
 
-    public SendMessageModel()
+    private SendMessageModel()
     {
-        _record = new RecordGeneratorModel();
-        _wxOperation = new WxOperation();
+        _record = RecordGeneratorModel.Instance;
+        _wxOperation = WxOperation.Instance;
     }
 
     public void SendWechatMessage(MessageInfo messageInfo)

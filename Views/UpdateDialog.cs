@@ -18,15 +18,12 @@ public static class UpdateDialog
     /// <summary>
     /// 显示"发现新版本"对话框
     /// </summary>
-    /// <param name="owner">父窗口</param>
-    /// <param name="info">更新信息</param>
-    /// <param name="onDownload">点击"立即更新"的回调（触发 AutoUpdater 下载）</param>
     public static void ShowUpdateAvailable(IWin32Window owner, UpdateInfo info, Action? onDownload = null)
     {
         var form = new Form
         {
             Text = "检查更新",
-            Size = new Size(500, 420),
+            Size = new Size(460, 340),
             StartPosition = FormStartPosition.CenterParent,
             FormBorderStyle = FormBorderStyle.FixedDialog,
             MaximizeBox = false,
@@ -53,34 +50,15 @@ public static class UpdateDialog
             ForeColor = ThemeColors.TextSecondary,
             TextAlign = ContentAlignment.MiddleCenter,
             Dock = DockStyle.Top,
-            Height = 35
+            Height = 50
         };
 
-        // 更新说明标签
-        var lblNotes = new Label
+        // 分隔线
+        var topSep = new Panel
         {
-            Text = "更新说明：",
-            Font = DefaultFont,
-            ForeColor = ThemeColors.TextSecondary,
             Dock = DockStyle.Top,
-            Height = 28,
-            Padding = new Padding(20, 5, 0, 0)
-        };
-
-        // 更新说明内容
-        var txtNotes = new TextBox
-        {
-            Text = info.ReleaseNotes,
-            Font = DefaultFont,
-            ForeColor = ThemeColors.TextPrimary,
-            BackColor = ThemeColors.InputBackground,
-            BorderStyle = BorderStyle.None,
-            Multiline = true,
-            ReadOnly = true,
-            ScrollBars = ScrollBars.Vertical,
-            Dock = DockStyle.Fill,
-            Padding = new Padding(10),
-            Margin = new Padding(20, 0, 20, 0)
+            Height = 1,
+            BackColor = ThemeColors.BorderSubtle
         };
 
         // 按钮面板
@@ -91,14 +69,13 @@ public static class UpdateDialog
             BackColor = ThemeColors.ContentBackground
         };
 
-        // "立即更新"按钮（主按钮）
         var btnUpdate = new RoundButton
         {
             Text = "立即更新",
             BaseColor = ThemeColors.PrimaryAccent,
             HoverColor = Color.FromArgb(200, 160, 250),
             PressColor = Color.FromArgb(170, 130, 230),
-            Size = new Size(130, 38),
+            Size = new Size(150, 38),
             Font = DefaultFont
         };
         btnUpdate.Location = new Point(form.ClientSize.Width / 2 - btnUpdate.Width - 10, 12);
@@ -108,14 +85,13 @@ public static class UpdateDialog
             onDownload?.Invoke();
         };
 
-        // "关闭"按钮
         var btnClose = new RoundButton
         {
             Text = "关闭",
             BaseColor = ThemeColors.ButtonDefault,
             HoverColor = ThemeColors.ButtonHover,
             PressColor = ThemeColors.ButtonPress,
-            Size = new Size(130, 38),
+            Size = new Size(150, 38),
             Font = DefaultFont
         };
         btnClose.Location = new Point(form.ClientSize.Width / 2 + 10, 12);
@@ -124,23 +100,38 @@ public static class UpdateDialog
         btnPanel.Controls.Add(btnUpdate);
         btnPanel.Controls.Add(btnClose);
 
-        // 分隔线
-        var separator = new Panel
+        // 底部分隔线
+        var bottomSep = new Panel
         {
             Dock = DockStyle.Bottom,
             Height = 1,
             BackColor = ThemeColors.BorderSubtle
         };
 
-        form.Controls.Add(txtNotes);
-        form.Controls.Add(lblNotes);
-        form.Controls.Add(separator);
+        // 可点击的发布页面链接
+        var lnkRelease = new LinkLabel
+        {
+            Text = "前往 GitHub Release 页面获取",
+            Font = new Font("Microsoft YaHei UI", 9F),
+            LinkColor = ThemeColors.PrimaryAccent,
+            ActiveLinkColor = Color.FromArgb(220, 180, 255),
+            VisitedLinkColor = ThemeColors.PrimaryAccent,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleCenter,
+            LinkBehavior = LinkBehavior.HoverUnderline
+        };
+        lnkRelease.LinkClicked += (s, e) =>
+        {
+            if (!string.IsNullOrEmpty(info.ReleaseUrl))
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(info.ReleaseUrl) { UseShellExecute = true });
+        };
+
+        form.Controls.Add(lnkRelease);
+        form.Controls.Add(bottomSep);
         form.Controls.Add(btnPanel);
+        form.Controls.Add(topSep);
         form.Controls.Add(lblVersion);
         form.Controls.Add(lblTitle);
-
-        // 暗色滚动条
-        UiHelper.EnableDarkScrollBar(txtNotes);
 
         form.ShowDialog(owner);
     }

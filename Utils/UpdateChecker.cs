@@ -15,7 +15,6 @@ public class UpdateInfo
 {
     public bool HasUpdate { get; set; }
     public string LatestVersion { get; set; } = "";
-    public string ReleaseNotes { get; set; } = "";
     public string ReleaseUrl { get; set; } = "";
     public string DownloadUrl { get; set; } = "";
 }

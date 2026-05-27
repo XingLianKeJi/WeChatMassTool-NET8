@@ -8,10 +8,13 @@ namespace WeChatMassTool.Models;
 
 public class RecordGeneratorModel
 {
+    private static readonly Lazy<RecordGeneratorModel> _instance = new(() => new RecordGeneratorModel());
+    public static RecordGeneratorModel Instance => _instance.Value;
+
     private readonly string _cacheDir;
     private readonly string _tempFilePath;
 
-    public RecordGeneratorModel()
+    private RecordGeneratorModel()
     {
         _cacheDir = FileIOManager.GetTempFilePath(FileIOManager.JoinPath(AppConfig.AppName, ".cache"));
         _tempFilePath = FileIOManager.JoinPath(_cacheDir, "exec_results.txt");

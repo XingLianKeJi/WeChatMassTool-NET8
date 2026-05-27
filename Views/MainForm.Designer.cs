@@ -900,7 +900,7 @@ namespace WeChatMassTool.Views
             lblVersion.Name = "lblVersion";
             lblVersion.Size = new Size(181, 38);
             lblVersion.TabIndex = 0;
-            lblVersion.Text = $"Version: v{Constants.AppVersion.Version}";
+            lblVersion.Text = "Version";
             lblVersion.TextAlign = ContentAlignment.MiddleRight;
             // 
             // lblProvider
@@ -912,7 +912,7 @@ namespace WeChatMassTool.Views
             lblProvider.Name = "lblProvider";
             lblProvider.Size = new Size(300, 38);
             lblProvider.TabIndex = 1;
-            lblProvider.Text = $"By {Constants.AppVersion.Author}";
+            lblProvider.Text = "Author";
             lblProvider.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // MainForm

@@ -58,6 +58,8 @@ public partial class MainForm : Form
         try
         {
             InitializeComponent();
+            lblVersion.Text = $"Version: v{Constants.AppVersion.Version}";
+            lblProvider.Text = $"By {Constants.AppVersion.Author}";
             LogManager.Info("InitializeComponent 完成");
         }
         catch (Exception ex)
@@ -75,7 +77,8 @@ public partial class MainForm : Form
                 LogManager.Info("InitControls 完成");
 
                 LogManager.Info("开始创建 ControllerMain");
-                _controller = new ControllerMain(this, animateOnStartup);
+                _controller = ControllerMain.Instance;
+                _controller.Initialize(this, animateOnStartup);
                 LogManager.Info("ControllerMain 创建完成");
 
                 LogManager.Info("开始 SetupEventHandlers");
@@ -414,7 +417,6 @@ public partial class MainForm : Form
             {
                 HasUpdate = true,
                 LatestVersion = args.CurrentVersion.ToString(),
-                ReleaseNotes = $"请访问 GitHub Release 页面查看详细更新说明",
                 ReleaseUrl = latestArgs?.ChangelogURL ?? "",
                 DownloadUrl = latestArgs?.DownloadURL ?? "",
             };
@@ -709,8 +711,18 @@ public partial class MainForm : Form
     private void BtnAddFile_Click(object? sender, EventArgs e) { AddFiles(); }
     private void BtnClearFiles_Click(object? sender, EventArgs e) { fileListBox.Items.Clear(); }
     private void BtnImportNames_Click(object? sender, EventArgs e) { ImportNames(); }
-    private void BtnExportContacts_Click(object? sender, EventArgs e) { ExportContacts(); }
-    private void BtnExportChatRooms_Click(object? sender, EventArgs e) { ExportChatRoomMembers(); }
+    private void BtnExportContacts_Click(object? sender, EventArgs e)
+    {
+        ShowToast("该功能暂未开放，敬请期待", ToastType.Info);
+        return;
+        ExportContacts();
+    }
+    private void BtnExportChatRooms_Click(object? sender, EventArgs e)
+    {
+        ShowToast("该功能暂未开放，敬请期待", ToastType.Info);
+        return;
+        ExportChatRoomMembers();
+    }
     private void BtnExport_Click(object? sender, EventArgs e) { ExportResults(); }
     private void BtnPause_Click(object? sender, EventArgs e) { TogglePause(); }
 

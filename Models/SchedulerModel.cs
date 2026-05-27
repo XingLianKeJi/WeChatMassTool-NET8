@@ -9,6 +9,11 @@ namespace WeChatMassTool.Models;
 
 public class SchedulerModel
 {
+    private static readonly Lazy<SchedulerModel> _instance = new(() => new SchedulerModel());
+    public static SchedulerModel Instance => _instance.Value;
+
+    private SchedulerModel() { }
+
     private class TaskEntry
     {
         public ScheduledTaskInfo Info = null!;

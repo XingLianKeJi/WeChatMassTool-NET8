@@ -10,9 +10,14 @@ namespace WeChatMassTool.Controllers;
 
 public class ControllerMain
 {
+    private static readonly Lazy<ControllerMain> _instance = new(() => new ControllerMain());
+    public static ControllerMain Instance => _instance.Value;
+
+    private static bool _initialized;
+
     private readonly SendMessageModel _model;
-    private readonly SchedulerModel _scheduler = new();
-    private readonly Form _view;
+    private readonly SchedulerModel _scheduler;
+    private Form _view = null!;
     private readonly Queue<(string TaskId, ScheduledTaskInfo Info)> _sendQueue = new();
     private List<string> _nameList = new();
     private string _nameListFile = string.Empty;
@@ -28,10 +33,18 @@ public class ControllerMain
 
     public bool IsSending => _model.IsTaskActive("send_msg");
 
-    public ControllerMain(Form view, bool animateOnStartup = true)
+    private ControllerMain()
     {
+        _model = SendMessageModel.Instance;
+        _scheduler = SchedulerModel.Instance;
+    }
+
+    public void Initialize(Form view, bool animateOnStartup = true)
+    {
+        if (_initialized) return;
+        _initialized = true;
+
         _view = view;
-        _model = new SendMessageModel();
         _animateOnStartup = animateOnStartup;
         SetupConnections();
     }
@@ -232,7 +245,7 @@ public class ControllerMain
 
     public void ExportExecResult(string filePath)
     {
-        var record = new RecordGeneratorModel();
+        var record = RecordGeneratorModel.Instance;
         var (status, tip) = record.ExportExecResultToCsv(filePath);
         MessageBox.Show(tip, "提示", MessageBoxButtons.OK, status ? MessageBoxIcon.Information : MessageBoxIcon.Error);
     }
@@ -251,7 +264,7 @@ public class ControllerMain
 
     public List<string> ExportContactsFromDb()
     {
-        var wxOp = new WxOperation();
+        var wxOp = WxOperation.Instance;
         return wxOp.GetFriendList();
     }
 
