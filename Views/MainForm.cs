@@ -783,58 +783,48 @@ public partial class MainForm : Form
 
     private Panel CreateTaskCard(string taskId, ScheduledTaskInfo info, ScheduleState state)
     {
+        // ========== 卡片容器 ==========
+        // 宽度计算：taskFlowPanel(480) - 左右Padding(12+12) - 滚动条预留(17) = 439
+        // 高度：3行文字(26*3) + 上下内边距(14+16) + 行间距(6*2) = 120
+        const int cardW = 438;
+        const int cardH = 120;
+        const int padX = 14;   // 左右内边距
+        const int padTop = 14; // 顶部内边距
+        const int rowH = 26;   // 每行高度
+        const int rowGap = 6;  // 行间距
+
         var card = new Panel
         {
-            Width = 450,
-            Height = 90,
-            BackColor = ThemeColors.InputBackground,
-            Margin = new Padding(0, 0, 0, 8),
+            Width = cardW,
+            Height = cardH,
+            BackColor = ThemeColors.InputBackground, // 卡片背景色
+            Margin = new Padding(0, 0, 0, 10),       // 卡片之间间距
             Cursor = Cursors.Hand,
             Tag = taskId
         };
 
+        // 圆角：用 Region 裁剪掉直角区域，避免角落漏底色
+        card.Region = new Region(
+            UiHelper.CreateRoundedPath(new Rectangle(0, 0, cardW, cardH), 6));
+        // 圆角边框
+        card.Paint += (s, e) =>
+        {
+            using var path = UiHelper.CreateRoundedPath(
+                new Rectangle(0, 0, cardW - 1, cardH - 1), 6);
+            using var pen = new Pen(ThemeColors.BorderSubtle, 1);
+            e.Graphics.DrawPath(pen, path);
+        };
+
+        // ========== 第一行：时间（左） + 倒计时（右） ==========
+        var row1Y = padTop;
         var lblTime = new Label
         {
             Text = $"{info.ScheduledTime:MM-dd HH:mm}",
             Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold),
             ForeColor = ThemeColors.TextPrimary,
-            Location = new Point(12, 8),
-            Size = new Size(140, 24),
+            Location = new Point(padX, row1Y),
+            Size = new Size(160, rowH),
             TextAlign = ContentAlignment.MiddleLeft,
-            Tag = taskId
-        };
-
-        var lblSummary = new Label
-        {
-            Text = GetSummary(info),
-            Font = new Font("Microsoft YaHei UI", 9F),
-            ForeColor = ThemeColors.TextSecondary,
-            Location = new Point(12, 32),
-            Size = new Size(280, 22),
-            TextAlign = ContentAlignment.MiddleLeft,
-            Tag = taskId
-        };
-
-        var lblNames = new Label
-        {
-            Text = GetNamesPreview(info.Names),
-            Font = new Font("Microsoft YaHei UI", 9F),
-            ForeColor = ThemeColors.TextMuted,
-            Location = new Point(12, 54),
-            Size = new Size(280, 22),
-            TextAlign = ContentAlignment.MiddleLeft,
-            Tag = taskId
-        };
-
-        var lblCountdown = new Label
-        {
-            Name = $"countdown_{taskId}",
-            Text = state == ScheduleState.Sending ? "发送中..." : "",
-            Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold),
-            ForeColor = ThemeColors.PrimaryAccent,
-            Location = new Point(320, 8),
-            Size = new Size(118, 24),
-            TextAlign = ContentAlignment.MiddleRight,
             Tag = taskId
         };
 
@@ -848,12 +838,50 @@ public partial class MainForm : Form
             PressColor = Color.FromArgb(200, 60, 55),
             ForeColor = ThemeColors.TextPrimary,
             CornerRadius = 6,
-            Size = new Size(28, 28),
-            Location = new Point(410, 54),
+            Size = new Size(30, 30),
+            Location = new Point(cardW - padX - 30, row1Y - 2), // 右上角
             Cursor = Cursors.Hand
         };
 
-        // 点击卡片进入编辑
+        var lblCountdown = new Label
+        {
+            Name = $"countdown_{taskId}",
+            Text = state == ScheduleState.Sending ? "发送中..." : "",
+            Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold),
+            ForeColor = ThemeColors.PrimaryAccent,
+            Location = new Point(cardW - padX - 30 - 8 - 126, row1Y), // 取消按钮左侧
+            Size = new Size(126, rowH),
+            TextAlign = ContentAlignment.MiddleRight,
+            Tag = taskId
+        };
+
+        // ========== 第二行：消息摘要 ==========
+        var row2Y = row1Y + rowH + rowGap;
+        var lblSummary = new Label
+        {
+            Text = GetSummary(info),
+            Font = new Font("Microsoft YaHei UI", 9F),
+            ForeColor = ThemeColors.TextSecondary,
+            Location = new Point(padX, row2Y),
+            Size = new Size(cardW - padX * 2, rowH), // 铺满宽度
+            TextAlign = ContentAlignment.MiddleLeft,
+            Tag = taskId
+        };
+
+        // ========== 第三行：名单（左） ==========
+        var row3Y = row2Y + rowH + rowGap;
+        var lblNames = new Label
+        {
+            Text = GetNamesPreview(info.Names),
+            Font = new Font("Microsoft YaHei UI", 9F),
+            ForeColor = ThemeColors.TextMuted,
+            Location = new Point(padX, row3Y),
+            Size = new Size(cardW - padX * 2, rowH),
+            TextAlign = ContentAlignment.MiddleLeft,
+            Tag = taskId
+        };
+
+        // 点击卡片进入编辑（取消按钮除外）
         EventHandler editHandler = (s, e) => EnterEditMode(taskId);
         card.Click += editHandler;
         lblTime.Click += editHandler;
@@ -880,7 +908,7 @@ public partial class MainForm : Form
             : "无内容";
 
         text = text.Replace("\n", " ").Replace("\r", "");
-        return text.Length > 20 ? text[..20] + "..." : text;
+        return text.Length > 30 ? text[..30] + "..." : text;
     }
 
     private static string GetNamesPreview(string names)

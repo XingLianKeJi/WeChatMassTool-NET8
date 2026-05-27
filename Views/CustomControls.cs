@@ -61,6 +61,21 @@ public class RoundButton : Button
         base.OnMouseUp(mevent);
     }
 
+    protected override void OnResize(EventArgs e)
+    {
+        base.OnResize(e);
+        // 用 Region 物理裁剪掉圆角外的区域，彻底杜绝直角底色
+        if (Width > 0 && Height > 0)
+        {
+            var newRegion = new Region(
+                UiHelper.CreateRoundedPath(new Rectangle(0, 0, Width, Height), CornerRadius));
+            var oldRegion = Region;
+            Region = newRegion;
+            oldRegion?.Dispose();
+        }
+        Invalidate();
+    }
+
     protected override void OnPaint(PaintEventArgs e)
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -68,22 +83,27 @@ public class RoundButton : Button
         var rect = new Rectangle(0, 0, Width - 1, Height - 1);
         var fillColor = _isPressed ? PressColor : _isHovered ? HoverColor : BaseColor;
 
+        // 填充按钮背景
         using var path = UiHelper.CreateRoundedPath(rect, CornerRadius);
         using var brush = new SolidBrush(fillColor);
         e.Graphics.FillPath(brush, path);
 
-        // 文本（留出圆角内边距）
+        // 悬停/按下时画高亮边框
+        if (_isHovered || _isPressed)
+        {
+            var borderColor = _isPressed
+                ? Color.FromArgb(160, 140, 200)
+                : Color.FromArgb(120, 110, 170);
+            using var pen = new Pen(borderColor, 1.5f);
+            e.Graphics.DrawPath(pen, path);
+        }
+
+        // 文本
         int pad = Math.Max(4, CornerRadius / 2);
         var textRect = new Rectangle(pad, 0, Width - 1 - pad * 2, Height - 1);
         var flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter |
                     TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis;
         TextRenderer.DrawText(e.Graphics, Text, Font, textRect, ForeColor, flags);
-    }
-
-    protected override void OnResize(EventArgs e)
-    {
-        base.OnResize(e);
-        Invalidate();
     }
 
     /// <summary>
@@ -172,39 +192,37 @@ public class CardPanel : Panel
     public Color CardBackColor
     {
         get => _cardBackColor;
-        set { _cardBackColor = value; Invalidate(); }
+        set { _cardBackColor = value; BackColor = value; Invalidate(); }
     }
 
     public CardPanel()
     {
         DoubleBuffered = true;
         Padding = new Padding(1);
+        BackColor = _cardBackColor;
     }
 
     protected override void OnPaintBackground(PaintEventArgs e)
     {
-        // 用父背景色填充角落区域（圆角外的区域）
-        using var brush = new SolidBrush(Parent?.BackColor ?? BackColor);
-        e.Graphics.FillRectangle(brush, ClientRectangle);
+        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        // 先用父背景色填充角落区域（圆角外的区域）
+        using (var parentBrush = new SolidBrush(Parent?.BackColor ?? BackColor))
+            e.Graphics.FillRectangle(parentBrush, ClientRectangle);
+        // 再用卡片色填充圆角区域
+        var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+        using (var path = UiHelper.CreateRoundedPath(rect, CornerRadius))
+        using (var fillBrush = new SolidBrush(_cardBackColor))
+            e.Graphics.FillPath(fillBrush, path);
     }
 
     protected override void OnPaint(PaintEventArgs e)
     {
+        if (!ShowBorder) return;
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-
         var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-
-        // 填充背景
         using var path = UiHelper.CreateRoundedPath(rect, CornerRadius);
-        using var fillBrush = new SolidBrush(_cardBackColor);
-        e.Graphics.FillPath(fillBrush, path);
-
-        // 边框
-        if (ShowBorder)
-        {
-            using var pen = new Pen(ThemeColors.BorderSubtle, 1);
-            e.Graphics.DrawPath(pen, path);
-        }
+        using var pen = new Pen(ThemeColors.BorderSubtle, 1);
+        e.Graphics.DrawPath(pen, path);
     }
 
     protected override void OnResize(EventArgs e)

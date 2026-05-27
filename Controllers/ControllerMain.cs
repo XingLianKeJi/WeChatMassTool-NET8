@@ -48,22 +48,22 @@ public class ControllerMain
         _scheduler.TaskTriggered += OnTaskTriggered;
         _scheduler.TaskCountdownTick += (id, remaining) =>
         {
-            if (_view.IsDisposed) return;
+            if (_view.IsDisposed || !_view.IsHandleCreated) return;
             _view.BeginInvoke(new Action(() => TaskCountdownTick?.Invoke(id, remaining)));
         };
         _scheduler.TaskStateChanged += (id, state) =>
         {
-            if (_view.IsDisposed) return;
+            if (_view.IsDisposed || !_view.IsHandleCreated) return;
             _view.BeginInvoke(new Action(() => TaskStateChanged?.Invoke(id, state)));
         };
         _scheduler.TaskListChanged += () =>
         {
-            if (_view.IsDisposed) return;
+            if (_view.IsDisposed || !_view.IsHandleCreated) return;
             _view.BeginInvoke(new Action(() => TaskListChanged?.Invoke()));
         };
         _scheduler.ScheduleInfoBar += (status, msg) =>
         {
-            if (_view.IsDisposed) return;
+            if (_view.IsDisposed || !_view.IsHandleCreated) return;
             _view.BeginInvoke(new Action(() => InfoBarShown?.Invoke(status, msg)));
         };
     }
@@ -138,7 +138,7 @@ public class ControllerMain
 
     private void OnProgressUpdated(int current, int total)
     {
-        if (_view.IsDisposed) return;
+        if (_view.IsDisposed || !_view.IsHandleCreated) return;
         _view.BeginInvoke(new Action(() =>
         {
             ProgressUpdated?.Invoke(current, total);
@@ -147,7 +147,7 @@ public class ControllerMain
 
     private void OnInfoBarShown(bool status, string tip)
     {
-        if (_view.IsDisposed) return;
+        if (_view.IsDisposed || !_view.IsHandleCreated) return;
         _view.BeginInvoke(new Action(() =>
         {
             InfoBarShown?.Invoke(status, tip);

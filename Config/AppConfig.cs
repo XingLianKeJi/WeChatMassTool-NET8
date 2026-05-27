@@ -47,3 +47,22 @@ public static class LogConfig
     public const string LogFilePrefix = "app_";
     public const int RetainDays = 7;
 }
+
+public static class HumanSimConfig
+{
+    // 键盘事件间隔（毫秒）
+    public const int KeyPauseMin = 8;
+    public const int KeyPauseMax = 25;
+
+    // 组合键 Ctrl 与主键之间的间隔
+    public const int CtrlKeyGapMin = 30;
+    public const int CtrlKeyGapMax = 80;
+
+    // 延迟档位（毫秒）
+    public const int ShortDelayMin = 150;
+    public const int ShortDelayMax = 500;
+    public const int MediumDelayMin = 400;
+    public const int MediumDelayMax = 1200;
+    public const int LongDelayMin = 800;
+    public const int LongDelayMax = 2000;
+}

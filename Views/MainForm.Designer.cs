@@ -861,7 +861,7 @@ namespace WeChatMassTool.Views
             taskFlowPanel.FlowDirection = FlowDirection.TopDown;
             taskFlowPanel.Location = new Point(0, 0);
             taskFlowPanel.Name = "taskFlowPanel";
-            taskFlowPanel.Padding = new Padding(8, 6, 8, 6);
+            taskFlowPanel.Padding = new Padding(12, 14, 12, 8);
             taskFlowPanel.Size = new Size(480, 1039);
             taskFlowPanel.TabIndex = 1;
             taskFlowPanel.Visible = false;

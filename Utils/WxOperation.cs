@@ -66,7 +66,7 @@ public class WxOperation
     public bool LocateWechatWindow()
     {
         WindowManager.WakeUpWindow(AppConfig.WeChatProcessName);
-        Thread.Sleep(800);
+        HumanSimulator.RandomDelay(600, 1200);
 
         _wxWindowHandle = FindWindow(AppConfig.WindowClassName, AppConfig.WindowName);
         if (_wxWindowHandle == IntPtr.Zero)
@@ -83,7 +83,7 @@ public class WxOperation
         if (_wxWindowHandle != IntPtr.Zero)
         {
             WindowManager.BringWindowToFront(_wxWindowHandle);
-            Thread.Sleep(300);
+            HumanSimulator.RandomDelay(200, 500);
         }
 
         return _wxWindowHandle != IntPtr.Zero;
@@ -101,34 +101,37 @@ public class WxOperation
                 keybd_event(VK_SHIFT, 0, 0, UIntPtr.Zero);
 
             keybd_event(vkCode, 0, 0, UIntPtr.Zero);
-            Thread.Sleep(10);
+            HumanSimulator.RandomKeyPause();
             keybd_event(vkCode, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
 
             if (shift)
                 keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
 
-            Thread.Sleep((int)(waitTime * 1000));
+            if (waitTime > 0)
+                HumanSimulator.RandomDelay((int)(waitTime * 800), (int)(waitTime * 1200));
         }
     }
 
     public void SendKey(byte vk, double waitTime = 0)
     {
         keybd_event(vk, 0, 0, UIntPtr.Zero);
-        Thread.Sleep(10);
+        HumanSimulator.RandomKeyPause();
         keybd_event(vk, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
         if (waitTime > 0)
-            Thread.Sleep((int)(waitTime * 1000));
+            HumanSimulator.RandomDelay((int)(waitTime * 800), (int)(waitTime * 1200));
     }
 
     public void SendCtrlKey(byte key, double waitTime = 0)
     {
         keybd_event(VK_CONTROL, 0, 0, UIntPtr.Zero);
+        HumanSimulator.RandomDelay(HumanSimConfig.CtrlKeyGapMin, HumanSimConfig.CtrlKeyGapMax);
         keybd_event(key, 0, 0, UIntPtr.Zero);
-        Thread.Sleep(10);
+        HumanSimulator.RandomKeyPause();
         keybd_event(key, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+        HumanSimulator.RandomKeyPause();
         keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
         if (waitTime > 0)
-            Thread.Sleep((int)(waitTime * 1000));
+            HumanSimulator.RandomDelay((int)(waitTime * 800), (int)(waitTime * 1200));
     }
 
     private IntPtr FindChildEditControl(IntPtr parentHandle, string? windowName = null)
@@ -171,16 +174,38 @@ public class WxOperation
         EnsureWindowActive();
 
         SendCtrlKey(VK_F, 0.5);
-        Thread.Sleep(500);
+        HumanSimulator.RandomDelay(HumanSimConfig.ShortDelayMin, HumanSimConfig.ShortDelayMax);
 
         ClipboardManager.SetClipboardText(name);
-        Thread.Sleep(300);
+        HumanSimulator.RandomDelay(HumanSimConfig.ShortDelayMin, HumanSimConfig.ShortDelayMax);
 
         SendCtrlKey(VK_V, 0.5);
-        Thread.Sleep(800);
+        HumanSimulator.RandomDelay(HumanSimConfig.MediumDelayMin, HumanSimConfig.MediumDelayMax);
+
+        // OCR 识别搜索结果，智能选择正确目标
+        int targetIndex = -1;
+        try
+        {
+            targetIndex = OcrHelper.RecognizeSearchResult(_wxWindowHandle, name)
+                .GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            LogManager.Warning($"OCR 识别失败，回退直接回车: {ex.Message}");
+        }
+
+        // 按下箭头选中正确结果
+        if (targetIndex > 0)
+        {
+            for (int i = 0; i < targetIndex; i++)
+            {
+                SendKey(VK_DOWN, 0.2);
+                HumanSimulator.RandomDelay(100, 250);
+            }
+        }
 
         SendKey(VK_RETURN, 0.8);
-        Thread.Sleep(1000);
+        HumanSimulator.RandomDelay(HumanSimConfig.MediumDelayMin, HumanSimConfig.MediumDelayMax);
     }
 
     private void EnsureWindowActive()
@@ -189,7 +214,7 @@ public class WxOperation
         {
             ShowWindow(_wxWindowHandle, 9);
             SetForegroundWindow(_wxWindowHandle);
-            Thread.Sleep(500);
+            HumanSimulator.RandomDelay(300, 700);
         }
     }
 
@@ -201,17 +226,17 @@ public class WxOperation
         EnsureWindowActive();
 
         ClipboardManager.SetClipboardText(text);
-        Thread.Sleep(500);
+        HumanSimulator.RandomDelay(HumanSimConfig.ShortDelayMin, HumanSimConfig.ShortDelayMax);
 
         SendCtrlKey(VK_V, waitTime);
-        Thread.Sleep((int)(waitTime * 1000));
+        HumanSimulator.RandomDelay((int)(waitTime * 800), (int)(waitTime * 1200));
 
         if (sendShortcut == "{Enter}")
             SendKey(VK_RETURN, 1.0);
         else if (sendShortcut == "{Ctrl}{Enter}")
             SendCtrlKey(VK_RETURN, 1.0);
 
-        Thread.Sleep(1000);
+        HumanSimulator.RandomDelay(HumanSimConfig.LongDelayMin, HumanSimConfig.LongDelayMax);
     }
 
     public void SendFiles(string[] filePaths, double waitTime, string sendShortcut = "{Enter}")
@@ -224,21 +249,21 @@ public class WxOperation
             return;
 
         WindowManager.BringWindowToFront(_wxWindowHandle);
-        Thread.Sleep(200);
+        HumanSimulator.RandomDelay(100, 300);
 
         ClipboardManager.SetClipboardFiles(existingFiles);
-        Thread.Sleep(300);
+        HumanSimulator.RandomDelay(200, 400);
 
         EnsureWindowActive();
         SendCtrlKey(VK_V, waitTime);
-        Thread.Sleep((int)(waitTime * 1000));
+        HumanSimulator.RandomDelay((int)(waitTime * 800), (int)(waitTime * 1200));
 
         if (sendShortcut == "{Enter}")
             SendKey(VK_RETURN, 1.0);
         else if (sendShortcut == "{Ctrl}{Enter}")
             SendCtrlKey(VK_RETURN, 1.0);
 
-        Thread.Sleep(1000);
+        HumanSimulator.RandomDelay(HumanSimConfig.LongDelayMin, HumanSimConfig.LongDelayMax);
     }
 
     public List<string> GetFriendList(string? tag = null)
